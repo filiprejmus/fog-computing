@@ -13,12 +13,11 @@ class ClientTask:
         self.id = id
 
     def generateData(self):
-        temperature = round(
-            random.uniform(20, 30), 2
-        )  # generate temperature between 20 and 30 degrees Celsius
-        humidity = round(
-            random.uniform(40, 60), 2
-        )  # generate humidity between 40% and 60%
+        # temperature = round(
+        #     random.uniform(20, 30), 2
+        # )  # generate temperature between 20 and 30 degrees Celsius
+        temperature = self.id * 20
+        humidity = self.id + 60
         return (temperature, humidity)
 
     def run(self):
@@ -47,7 +46,7 @@ class ClientTask:
 
 
 def main():
-    client = ClientTask(sys.argv[1] if len(sys.argv) > 1 else 1)
+    client = ClientTask(int(sys.argv[1]) if len(sys.argv) > 1 else 1)
     client.run()
 
 
