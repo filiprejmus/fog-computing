@@ -11,7 +11,7 @@ class ServerTask:
     def __init__(self):
         self.data = []
         self.response_data = 0
-        self.client_idents = set()
+        self.client_idents = set({str.encode("sensor-1"), str.encode("sensor-2")})
 
     def calculate_data_and_send(self, frontend):
         threading.Timer(15, self.calculate_data_and_send, [frontend]).start()
@@ -35,7 +35,6 @@ class ServerTask:
         print("Worker started")
         while True:
             ident, msg = frontend.recv_multipart()
-            self.client_idents.add(ident)
             self.data.append(msg.decode())
             print("Cloud worker received %s from %s" % (msg, ident))
 
