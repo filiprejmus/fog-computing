@@ -12,6 +12,7 @@ readme = "README.md"
 python = "^3.10"
 pydantic = "^1.10.9"
 pyzmq = "25.0.1"
+numpy = "^1.25.1"
 
 
 

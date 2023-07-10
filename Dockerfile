@@ -8,10 +8,12 @@ COPY poetry.lock pyproject.toml /app/
 
 # Install the dependencies
 RUN pip install poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-dev
+    poetry config virtualenvs.create false
+
+RUN poetry install --no-dev
+
 
 EXPOSE 5570
 
 # Run app.py when the container launches
-CMD ["poetry", "run", "python", "cloud-server.py"]
+CMD ["python", "cloud-server.py"]

@@ -1,7 +1,8 @@
 import logging
-import random
+import argparse
 import zmq
-import sys
+import threading
+import json
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
@@ -9,36 +10,40 @@ logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 class ClientTask:
     """ClientTask"""
 
-    def __init__(self, id):
+    def __init__(self, id, ip):
         self.id = id
+        self.server_ip = ip
+        print(f"Device ID: {self.id}")
+        print(f"Server IP: {self.server_ip}")
 
-    def generateData(self):
-        # temperature = round(
-        #     random.uniform(20, 30), 2
-        # )  # generate temperature between 20 and 30 degrees Celsius
+    def generateData(self, socket):
+        threading.Timer(5, self.generateData, [socket]).start()
         temperature = self.id * 20
         humidity = self.id + 60
-        return (temperature, humidity)
+        sensor_data_json = {"temperature": temperature, "humidity": humidity}
+        sensor_data = json.dumps(sensor_data_json)
+        socket.send_string(sensor_data)
 
     def run(self):
         context = zmq.Context()
         socket = context.socket(zmq.DEALER)
         identity = "sensor-%d" % self.id
         socket.identity = identity.encode("ascii")
-        socket.connect("tcp://localhost:5570")
+        socket.connect(f"tcp://{self.server_ip}:5570")
+        self.generateData(socket)
+
         print("Sensor %s started" % (identity))
+
         poll = zmq.Poller()
         poll.register(socket, zmq.POLLIN)
         reqs = 0
         while True:
             reqs = reqs + 1
             print("Request #%d sent.." % (reqs))
-            data = self.generateData()
-            socket.send_string("Sensor data: %s, %s" % (data[0], data[1]))
             for i in range(5):
                 sockets = dict(poll.poll(1000))
                 if socket in sockets:
-                    msg = socket.recv()
+                    msg = socket.recv_multipart()
                     print("Client %s received: %s" % (identity, msg))
 
         socket.close()
@@ -46,7 +51,17 @@ class ClientTask:
 
 
 def main():
-    client = ClientTask(int(sys.argv[1]) if len(sys.argv) > 1 else 1)
+    """main function"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--ip", type=str, required=False, help="IP address", default="127.0.0.1"
+    )
+    parser.add_argument("--id", type=int, required=False, help="ID", default=1)
+
+    args = parser.parse_args()
+    ip = args.ip
+    id = args.id
+    client = ClientTask(id=id, ip=ip)
     client.run()
 
 

@@ -1,5 +1,5 @@
 run-cloud: 
-	poetry run python cloud-server.py
+	poetry run python cloud/cloud-server.py
 
 run-server-one: 
 	poetry run python client/sensor-device-one.py
