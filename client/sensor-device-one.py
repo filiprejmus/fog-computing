@@ -23,6 +23,7 @@ class ClientTask:
         sensor_data_json = {"temperature": temperature, "humidity": humidity}
         sensor_data = json.dumps(sensor_data_json)
         socket.send_string(sensor_data)
+        print(f"Request {sensor_data} sent..")
 
     def run(self):
         context = zmq.Context()
@@ -39,7 +40,6 @@ class ClientTask:
         reqs = 0
         while True:
             reqs = reqs + 1
-            print("Request #%d sent.." % (reqs))
             for i in range(5):
                 sockets = dict(poll.poll(1000))
                 if socket in sockets:
