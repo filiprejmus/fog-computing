@@ -5,8 +5,28 @@ import threading
 import json
 import math
 import time
+import sys
+from PySide6.QtWidgets import QApplication, QWidget, QFrame
+from PySide6.QtGui import QColor
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+
+
+class SensorWindow(QWidget):
+    def __init__(self, id):
+        super().__init__()
+        self.id = id
+        self.initUI()
+
+    def initUI(self):
+        self.setGeometry(100, 100, 300, 300)
+        self.setWindowTitle(f"Sensor Window {self.id}")
+        self.sensor_box = QFrame(self)
+        self.sensor_box.setGeometry(50, 50, 200, 200)
+        self.sensor_box.setStyleSheet("background-color: white;")
+
+    def update_box(self, color):
+        self.sensor_box.setStyleSheet(f"background-color: {color};")
 
 
 class ClientTask:
@@ -15,6 +35,9 @@ class ClientTask:
     def __init__(self, id, ip):
         self.id = id
         self.server_ip = ip
+        self.app = QApplication()
+        self.window = SensorWindow(id=id)
+        self.window.show()
         print(f"Device ID: {self.id}")
         print(f"Server IP: {self.server_ip}")
 
@@ -50,9 +73,10 @@ class ClientTask:
                     msg_json = json.loads(msg.decode())
                     print("Client %s received: %s" % (identity, msg_json))
                     if msg_json["action"] == "red":
-                        pass
+                        self.window.update_box("red")
                     if msg_json["action"] == "green":
-                        pass
+                        self.window.update_box("green")
+            self.app.processEvents()
 
         socket.close()
         context.term()

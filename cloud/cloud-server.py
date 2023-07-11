@@ -25,7 +25,7 @@ class ServerTask:
 
     def calculate_data_and_send(self, frontend):
         threading.Timer(15, self.calculate_data_and_send, [frontend]).start()
-        action = "red" if np.mean(self.temps) >= 30 else "green"
+        action = "red" if np.mean(self.temps[-5:-1]) >= 30 else "green"
         response_data = {"action": action}
         response_data = str.encode(json.dumps(response_data))
 
