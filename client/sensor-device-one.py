@@ -5,7 +5,6 @@ import threading
 import json
 import math
 import time
-import sys
 from PySide6.QtWidgets import QApplication, QWidget, QFrame
 from PySide6.QtGui import QColor
 
