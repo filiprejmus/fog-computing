@@ -17,5 +17,6 @@ This system consists of two virtual sensor IOT components that generate temperat
 
 ## Cloud Server
 The cloud server communicates with the IOT devices as a ZeroMQ Router. It calculates the actions every 15 seconds using an extra thread. The actions are sent to two predefined IOT devices `sensor-1` and `sensor-2`. If a sensor cannot be reached the messages are stored in a queue which gets flushed once the sensor is reachable again.
+
 ## Sensor Device
 The sensor devices communicate with the cloud component as ZeroMQ Dealers. They generate data every 5 seconds in an extra thread. If they can't reach the cloud component the data gets stored in a queue which gets flushed once the cloud component is reachable again. The sensor devices also have a LED which changes color depending on the action received from the cloud component.
