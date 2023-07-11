@@ -3,6 +3,8 @@ import argparse
 import zmq
 import threading
 import json
+import math
+import time
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
@@ -18,7 +20,8 @@ class ClientTask:
 
     def generateData(self, socket):
         threading.Timer(5, self.generateData, [socket]).start()
-        temperature = self.id * 20
+        t = time.time()
+        temperature = 10 * math.sin(2 * math.pi * t / 150) + 30
         humidity = self.id + 60
         sensor_data_json = {"temperature": temperature, "humidity": humidity}
         sensor_data = json.dumps(sensor_data_json)
@@ -43,8 +46,13 @@ class ClientTask:
             for i in range(5):
                 sockets = dict(poll.poll(1000))
                 if socket in sockets:
-                    msg = socket.recv_multipart()
-                    print("Client %s received: %s" % (identity, msg))
+                    msg = socket.recv()
+                    msg_json = json.loads(msg.decode())
+                    print("Client %s received: %s" % (identity, msg_json))
+                    if msg_json["action"] == "red":
+                        pass
+                    if msg_json["action"] == "green":
+                        pass
 
         socket.close()
         context.term()

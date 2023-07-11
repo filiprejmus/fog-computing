@@ -9,10 +9,11 @@ authors = ["filiprejmus <rejmusfilip@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.11,<3.12"
 pydantic = "^1.10.9"
 pyzmq = "25.0.1"
 numpy = "^1.25.1"
+pyside6 = "^6.5.1.1"
 
 
 
